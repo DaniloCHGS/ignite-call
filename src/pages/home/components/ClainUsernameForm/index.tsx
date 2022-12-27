@@ -3,20 +3,20 @@ import { ArrowRight } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form } from "./style";
+import { Form, FormAnnotation } from "./style";
 
 const ClainUsernameFormSchema = z.object({
     username: z.string()
-    .min(3, {message: ''})
-    .regex(/^([a-z\\-]+)$/i)
-    .transform(value => value.toLowerCase())
+        .min(3, { message: 'Username deve conter no mínimo 3 caracteres' })
+        .regex(/^([a-z\\-]+)$/i, { message: 'Digite apenas letras e hifen' })
+        .transform(value => value.toLowerCase())
 })
 
 type ClainUsernameFormData = z.infer<typeof ClainUsernameFormSchema>
 
 export function ClainUsernameForm() {
 
-    const { register, handleSubmit } = useForm<ClainUsernameFormData>({
+    const { register, handleSubmit, formState: { errors } } = useForm<ClainUsernameFormData>({
         resolver: zodResolver(ClainUsernameFormSchema)
     })
 
@@ -25,20 +25,24 @@ export function ClainUsernameForm() {
     }
 
     return (
-        <Form as="form" onSubmit={handleSubmit(handleClainUsername)}>
-            <TextInput
-                size="sm"
-                prefix="ingite.com/"
-                placeholder="seu-usuário"
-                {...register("username")}
-            />
-            <Button
-                size="sm"
-                type="submit"
-            >
-                Reservar
-                <ArrowRight />
-            </Button>
-        </Form>
+        <>
+            <Form as="form" onSubmit={handleSubmit(handleClainUsername)}>
+                <TextInput
+                    size="sm"
+                    prefix="ingite.com/"
+                    placeholder="seu-usuário"
+                    {...register("username")}
+                />
+                <Button size="sm" type="submit">
+                    Reservar
+                    <ArrowRight />
+                </Button>
+            </Form>
+            <FormAnnotation>
+                <Text>
+                    {errors.username ? errors.username.message : 'Digite usuário desejado'}
+                </Text>
+            </FormAnnotation>
+        </>
     )
 }
