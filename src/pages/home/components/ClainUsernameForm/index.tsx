@@ -7,7 +7,7 @@ import { Form, FormAnnotation } from "./style";
 
 const ClainUsernameFormSchema = z.object({
     username: z.string()
-        .min(3, { message: 'Username deve conter no mínimo 3 caracteres' })
+        .min(3, { message: 'Username deve conter no mínimo 3 letras' })
         .regex(/^([a-z\\-]+)$/i, { message: 'Digite apenas letras e hifen' })
         .transform(value => value.toLowerCase())
 })
