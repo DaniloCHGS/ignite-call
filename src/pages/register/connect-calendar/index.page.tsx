@@ -1,16 +1,22 @@
 import { Heading, MultiStep, Text, Button } from "@ignite-ui/react"
 import { signIn, useSession } from "next-auth/react"
-import { ArrowRight } from "phosphor-react"
+import { useRouter } from "next/router"
+import { ArrowRight, Check } from "phosphor-react"
 import { Container, Header } from "../style"
-import { ConnectBox, ConnectItem } from "./style"
+import { AuthError, ConnectBox, ConnectItem } from "./style"
 
 
 export default function Register() {
 
-    // async function handleRegister() {
+    async function handleConnectCalendar() {
+        await signIn('google')
+    }
 
-    // }
     const session = useSession()
+    const router = useRouter()
+
+    const hasAuthError = !!router.query.error
+    const isSignined = session.status != 'unauthenticated'
 
     return (
         <Container>
@@ -22,16 +28,28 @@ export default function Register() {
             <ConnectBox>
                 <ConnectItem>
                     <Text>Google Calendar</Text>
-                    <Button variant="secondary" size="sm" onClick={() => signIn('google')}>
-                        Conectar
-                        <ArrowRight />
-                    </Button>
+                    {isSignined ? (
+                        <Button size="sm" disabled>
+                            Conectado
+                            <Check />
+                        </Button>
+                    ) : (
+                        <Button variant="secondary" size="sm" onClick={handleConnectCalendar}>
+                            Conectar
+                            <ArrowRight />
+                        </Button>
+                    )}
                 </ConnectItem>
-                <Button type="submit">
+                {hasAuthError && (
+                    <AuthError size="sm">
+                        Falha so se conectar ao Google, verifique se você habilitou as permissões de acesso ao Google Calendar
+                    </AuthError>
+                )}
+                <Button type="submit" disabled={!isSignined}>
                     Próximo passo
                     <ArrowRight />
                 </Button>
             </ConnectBox>
-        </Container>
+        </Container >
     )
 }
